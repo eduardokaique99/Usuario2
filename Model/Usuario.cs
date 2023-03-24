@@ -26,7 +26,7 @@ namespace Model
             return $"Id: {Id}, Nome: {Nome}, Email: {Email}, Senha: {Senha}";
         } // Imprime as informações
 
-        public static void AlterarUsuario( // Metodo para alterar a CIDADE
+        /*public static void AlterarUsuario( // Metodo para alterar a CIDADE
             int id,
             string nome,
             string email,
@@ -51,8 +51,85 @@ namespace Model
             if (usuario == null) {
                 throw new Exception("Usuario não encontrada");
             }
-
             return usuario;
+        }*/
+        public static Model.Usuario BuscarUsuario( //Metodo para buscar no banco algum usuario
+            int id
+        )
+        {
+            Database db = new Database();
+            try
+            {
+                Model.Usuario usuario = (from u in db.Usuarios
+                                     where u.Id == id
+                                     select u).First();
+                return usuario;
+            } catch
+            {
+                throw new System.Exception("Usuário não encontrado");
+            }
+            
+        }
+
+        public static Usuario AlterarUsuario( //Metodo para alterar os dados de algum usuario do banco
+            int id,
+            string nome,
+            string email,
+            string senha
+        )
+        {
+            try
+            {
+                Usuario usuario = BuscarUsuario(id);
+                usuario.Email = email;
+                usuario.Nome = nome;
+                usuario.Senha = senha;
+                Database db = new Database();
+                db.Usuarios.Update(usuario);
+                db.SaveChanges();
+
+                return usuario;
+            }
+            catch (System.Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public static void ExcluirUsuario( //Metodo para excluir algum usuario do banco
+            int id
+        )
+        {
+            try
+            {
+                Model.Usuario usuario = BuscarUsuario(id);
+                Database db = new Database();
+                db.Usuarios.Remove(usuario);
+                db.SaveChanges();
+            }
+            catch (System.Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public static List<Model.Usuario> ListarUsuarios() { // Metodo para listar os usuarios
+            Database db = new Database();
+            List<Model.Usuario> usuarios = (from u in db.Usuarios
+                                        select u).ToList();
+            return usuarios;
+        }
+
+        public static Model.Usuario BuscarPorEmail(string email) { // Metodo para buscar usuario pelo e-mail
+            try {
+                Database db = new Database();
+                Model.Usuario usuario = (from u in db.Usuarios
+                                            where u.Email == email
+                                            select u).First();
+                return usuario;
+            } catch {
+                throw new System.Exception("Usuário não encontrado");
+            }
         }
     }
 }

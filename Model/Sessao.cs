@@ -6,7 +6,7 @@ namespace Model
     public class Sessao 
     {
         public int Id { get; set; }
-        public Usuario id { get; set; }
+        public int UsuarioId { get; set; }
         public string Token { get; set; }
         public DateTime DataCriacao { get; set; }
         public DateTime DataExpiracao { get; set; }
@@ -29,10 +29,10 @@ namespace Model
 
         public override string ToString() 
         {
-            return $"Id: {Id}, Token: {Token}, DataCriacao: {DataCriacao}, DataExpiracao}: {DataExpiracao}";
+            return $"Id: {Id}, Token: {Token}, DataCriacao: {DataCriacao}, DataExpiracao: {DataExpiracao}";
         } 
 
-        public static void AlterarRota( 
+        /*public static void AlterarRota( 
             int id,
             string token,
             DateTime dataCriacao,
@@ -58,8 +58,39 @@ namespace Model
             if (sessao == null) {
                 throw new Exception("Sessão não encontrada");
             }
-
             return sessao;
+        }*/
+        public static Sessao AlterarSessao(int id, DateTime dataExpiracao)
+        {
+            Database db = new Database();
+            try
+            {
+                Sessao sessao = (from s in db.Sessoes
+                                 where s.Id == id
+                                 select s).First();
+                sessao.DataExpiracao = dataExpiracao;
+                db.SaveChanges();
+                return sessao;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
+
+        public static List<Sessao> ListarSessoes()
+        {
+            Database db = new Database();
+            try
+            {
+                List<Sessao> sessoes = db.Sessoes.Include("Usuario").ToList();
+                return sessoes;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
     }
 }

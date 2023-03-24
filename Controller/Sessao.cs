@@ -4,9 +4,7 @@ namespace Controller
 {
     public class Sessao
     {
-        private static int valorTotal;
-
-        public static void CadastrarSessao(
+        /*public static void CadastrarSessao(
             int id,
             string token,
             string dataCriacao,
@@ -39,12 +37,6 @@ namespace Controller
             } catch (Exception) {
                 throw new Exception("Id inválido");
             }
-            Model.Cidade origem = Model.Cidade.BuscarCidade(int.Parse(origemId));
-            Model.Cidade destino = Model.Cidade.BuscarCidade(int.Parse(destinoId));
-            Model.Caminhao caminhao = Model.Caminhao.BuscarCaminhao(int.Parse(caminhaoId));
-            DateTime dataConvert = DateTime.Parse(data);
-            int valor = Int32.Parse(valore);
-            Model.Rota.AlterarRota(idConvert, origem, destino, caminhao, dataConvert, valor);
         }
  
         public static void ExcluirSessao(string id) 
@@ -69,22 +61,28 @@ namespace Controller
             }
             
             return Model.Sessao.BuscarSessao(idConvert);
-        }
- 
-        public static List<string> ListarSessao()
+        }*/
+        public static Model.Sessao Login( //Fazer o login de acordo com o e-mail e senha
+            string email,
+            string password
+        )
         {
-            List<string> stringSessao = new List<string>();
-            IEnumerable<Model.Sessao> rotas = from rota in Model.Sessao.Rotas
-                join origem in Model.Cidade.Cidades on rota.Origem.Id equals origem.Id
-                join destino in Model.Cidade.Cidades on rota.Destino.Id equals destino.Id
-                join caminhao in Model.Caminhao.Caminhoes on rota.Caminhao.Id equals caminhao.Id
-                select rota;
+            try {
+                Model.Usuario usuario = Usuario.BuscarPorEmail(email);
 
-            foreach (Model.Sessao rota in rotas) {
-                stringSessao.Add($"Id: {rota.Id}, Origem: {rota.Origem.Nome}, Destino: {rota.Destino.Nome}, Caminhão: {rota.Caminhao.Placa}, Data: {rota.Data}, Valor: {rota.Valor}");
+                if (usuario.Senha != password) {
+                    throw new Exception("Senha inválida");
+                }
+
+                return new Model.Sessao(usuario.Id);
+            } catch
+            {
+                throw new Exception("Login inválido");
             }
-
-            return stringSessao;
+        }
+        public static List<Model.Sessao> ListarSessoes()//Listar as sessões
+        {
+            return Model.Sessao.ListarSessoes();
         }
     }
 }
